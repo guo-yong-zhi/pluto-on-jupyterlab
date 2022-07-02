@@ -1,6 +1,18 @@
 FROM jupyter/scipy-notebook:latest
 
 USER root
+
+RUN wget https://github.com/google/fonts/archive/main.tar.gz -O gf.tar.gz && \
+  tar -xf gf.tar.gz && \
+  mkdir -p ~/.fonts/truetype/google-fonts && \
+  find $PWD/fonts-main/ -name "*.ttf" -exec install -m644 {} ~/.fonts/truetype/google-fonts/ \; || return 1 && \
+  rm -f gf.tar.gz && \
+  # Remove the extracted fonts directory
+  rm -rf $PWD/fonts-main && \
+  # Remove the following line if you're installing more applications after this RUN command and you have errors while installing them
+  rm -rf /var/cache/* && \
+  fc-cache -f
+
 RUN wget https://julialang-s3.julialang.org/bin/linux/x64/1.7/julia-1.7.2-linux-x86_64.tar.gz && \
     tar -xvzf julia-1.7.2-linux-x86_64.tar.gz && \
     mv julia-1.7.2 /opt/ && \
